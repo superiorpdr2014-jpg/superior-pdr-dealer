@@ -17,6 +17,9 @@ window.SHOP_CONFIG = {
   // ---- BRANDING ----------------------------------------------------
   brand: {
     companyName:  'Superior PDR',
+    // 車行名稱 — 會顯示成「XXX 專用估價計算器」抬頭。
+    // 換車行改這一行即可；也可用網址 ?d=車行名稱 臨時覆蓋。
+    dealerName:   'BMW 台北汎德濱江服務中心',
     logoUrl:      'logo.png',
     phone:        '0901242511',
     phonePretty:  '0901-242-511',

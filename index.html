@@ -101,6 +101,18 @@
     .hdr-img{height:34px;width:auto;display:block;}
     .hdr-sep{width:1px;height:26px;background:rgba(255,255,255,.18);}
     .hdr-title{font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#bcbcbc;}
+    /* 車行抬頭列：某某車行 專用估價計算器 */
+    .dealer-bar{display:none;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+      padding:11px 18px;background:linear-gradient(90deg,rgba(204,0,0,.10),rgba(204,0,0,.03));
+      border-bottom:1px solid rgba(255,68,68,.18);text-align:center;}
+    .dealer-bar.on{display:flex;}
+    .dealer-bar .db-name{font-size:15px;font-weight:900;letter-spacing:.5px;color:#fff;}
+    .dealer-bar .db-sub{font-size:12px;font-weight:700;letter-spacing:2px;color:#ff8080;text-transform:uppercase;}
+    @media(max-width:640px){
+      .dealer-bar{padding:9px 14px;gap:4px;flex-direction:column;}
+      .dealer-bar .db-name{font-size:14px;}
+      .dealer-bar .db-sub{font-size:10.5px;letter-spacing:1.5px;}
+    }
     .lang-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;border:1px solid rgba(255,68,68,.3);border-radius:3px;overflow:hidden;}
     .lang-toggle button{padding:5px 9px;background:transparent;border:none;color:#888;font-size:11px;font-weight:800;letter-spacing:.5px;cursor:pointer;font-family:inherit;transition:all .13s;}
     .lang-toggle button:hover{color:#ccc;}
@@ -831,6 +843,8 @@ window.SHOP_CONFIG = {
   </div>
 </div>
 
+<div class="dealer-bar" id="dealer-bar"></div>
+
 <!-- ═══ SHARED: Client & Vehicle ═══ -->
 <div class="client-bar">
   <div class="cb-wrap">
@@ -1484,7 +1498,18 @@ function applyConfig(){
     var img = document.getElementById('hdr-logo');
     if (img) { img.src = CONFIG.logoUrl; img.alt = CONFIG.companyName; }
     if (CONFIG.accentColor) document.documentElement.style.setProperty('--accent', CONFIG.accentColor);
-    document.title = CONFIG.companyName + ' \u2014 ' + t('subtitle');
+    // 車行抬頭：config.js 的 dealerName 為主，網址 ?d=車行名稱 可臨時覆蓋
+    var _dealer = '';
+    try { _dealer = (new URLSearchParams(location.search)).get('d') || ''; } catch(e) {}
+    if (!_dealer) _dealer = CONFIG.dealerName || '';
+    var _db = document.getElementById('dealer-bar');
+    if (_db && _dealer) {
+      _db.innerHTML = '<span class="db-name"></span><span class="db-sub">專用估價計算器</span>';
+      _db.querySelector('.db-name').textContent = _dealer;
+      _db.classList.add('on');
+    }
+    document.title = _dealer ? (_dealer + ' 專用估價計算器')
+                             : (CONFIG.companyName + ' \u2014 ' + t('subtitle'));
     document.documentElement.lang = LOCALE==='zh'?'zh-TW':LOCALE;
     document.documentElement.classList.add('notranslate');
     var mt=document.createElement('meta');mt.name='google';mt.content='notranslate';document.head.appendChild(mt);
