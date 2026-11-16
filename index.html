@@ -3749,10 +3749,20 @@ function configPdrSlider(id) {
   var curEl = document.getElementById('pdrcur-'+id); if (curEl) curEl.textContent = CS+f.amount;
 }
 
+// 凹痕深度防呆：淺／中度／深只能選一個，選了新的就自動取消另外兩個（折痕可以另外疊加）
+var DEPTH_EXCL = ['shallow','medium','deep'];
+function clearOtherDepth(store, scope, id) {
+  if (DEPTH_EXCL.indexOf(id) < 0) return;
+  DEPTH_EXCL.forEach(function(o){
+    if (o === id || !store[o]) return;
+    delete store[o];
+    var e = document.querySelector(scope + ' .pdr-f[data-fid="' + o + '"]'); if (e) e.classList.remove('on');
+  });
+}
 function pdrToggleFactor(id) {
   var el = document.querySelector('.pdr-f[data-fid="'+id+'"]');
   if (S.pdrFactors[id]) { delete S.pdrFactors[id]; el.classList.remove('on'); }
-  else { var d = PDR_FDEF[id] || {}; S.pdrFactors[id] = { pct:(d.pct||0), amount:pdrFactorDefault(id) }; el.classList.add('on'); configPdrSlider(id); }
+  else { clearOtherDepth(S.pdrFactors, '#pdr-factors', id); var d = PDR_FDEF[id] || {}; S.pdrFactors[id] = { pct:(d.pct||0), amount:pdrFactorDefault(id) }; el.classList.add('on'); configPdrSlider(id); }
   pdrRecalc();
 }
 
@@ -4012,7 +4022,7 @@ function configMotoSlider(id){
 function motoToggleFactor(id){
   var el=document.querySelector('#moto-factors .pdr-f[data-fid="'+id+'"]');
   if(S.motoFactors[id]){ delete S.motoFactors[id]; if(el) el.classList.remove('on'); }
-  else { S.motoFactors[id]={amount:motoFactorDefault(id)}; if(el) el.classList.add('on'); configMotoSlider(id); }
+  else { clearOtherDepth(S.motoFactors, '#moto-factors', id); S.motoFactors[id]={amount:motoFactorDefault(id)}; if(el) el.classList.add('on'); configMotoSlider(id); }
   motoRecalc();
 }
 function recomputeMotoFactors(){ Object.keys(S.motoFactors).forEach(function(id){ S.motoFactors[id].amount=motoFactorDefault(id); configMotoSlider(id); }); }
